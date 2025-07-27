@@ -53,6 +53,35 @@ export const signUp = async (req, res, next) => {
 }
 
 export const signIn = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({email});
+        if (!user) {
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) { 
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
+        );
+
+        res.status(200).json({
+            message: "User signed in successfully",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        });
+
+    } catch (error) {
+        next(error);
+    }
 
 }
 
