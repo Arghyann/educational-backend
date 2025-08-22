@@ -71,7 +71,7 @@ const subscriptionSchema = new mongoose.Schema({
         },
 
 
-    }.options({ timestamps: true })); // Automatically manage createdAt and updatedAt fields
+    },{ timestamps: true }); // Automatically manage createdAt and updatedAt fields
     
 ;
 subscriptionSchema.pre('save', function(next) {

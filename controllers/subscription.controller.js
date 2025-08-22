@@ -1,0 +1,27 @@
+import Subscription from "../models/subscription.model.js";
+
+
+export const createSubscription = async (req, res,next) => {
+    try {
+        const subscription = await Subscription.create({
+            ...req.body,
+            user: req.user._id, // Assuming req.user is populated with the authenticated user's data
+        });
+        res.status(201).json({success: true, data: subscription});
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUserSubscriptions = async (req, res, next) => {
+    try {
+
+        if(req.user.id!==req.params.id) {
+            return res.status(401).json({ success: false, message: 'Forbidden: You can only access your own subscriptions.' });
+        }
+        const subscriptions = await Subscription.find({ user: req.params.id });
+        res.status(200).json({ success: true, data: subscriptions });
+    } catch (error) {
+        next(error);
+    }
+}
